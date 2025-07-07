@@ -15,7 +15,11 @@
             id="email"
             class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <p v-if="emailError" class="mt-2 text-sm text-red-600">
+          <p
+            v-if="emailError"
+            class="mt-2 text-sm text-red-600"
+            aria-live="polite"
+          >
             Inserisci un'email valida.
           </p>
         </div>
@@ -30,7 +34,11 @@
             id="password"
             class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <p v-if="passwordError" class="mt-2 text-sm text-red-600">
+          <p
+            v-if="passwordError"
+            class="mt-2 text-sm text-red-600"
+            aria-live="polite"
+          >
             La password deve avere almeno 8 caratteri una lettera maiuscola e un
             numero.
           </p>
