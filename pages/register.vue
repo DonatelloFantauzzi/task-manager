@@ -5,7 +5,7 @@
       <p class="text-gray-500 mb-6 text-center">
         Entra nel tuo nuovo task manager!
       </p>
-      <form class="space-y-4">
+      <form @submit.prevent="register" class="space-y-4">
         <!-- Email -->
         <div>
           <label class="block text-sm font-medium mb-1" for="email"
@@ -17,8 +17,9 @@
             id="email"
             class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <p class="mt-2 text-sm text-red-600">
+          <p v-if="emailError" class="mt-2 text-sm text-red-600">
             <!-- Messaggio di errore email, da mostrare con v-if -->
+            Inserisci un'email valida.
           </p>
         </div>
         <!-- Password -->
@@ -29,20 +30,25 @@
           <div class="relative">
             <input
               v-model="password"
-              type="password"
+              :type="inputType"
+              ref="passwordInput"
               id="password"
               class="w-full border rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <!-- Icona occhio da gestire con Vue -->
             <button
+              @click.prevent="switchInputType"
+              aria-label="Toggle password visibility"
               type="button"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
             >
               👁️
             </button>
           </div>
-          <p class="mt-2 text-sm text-red-600">
+          <p v-if="passwordError" class="mt-2 text-sm text-red-600">
             <!-- Messaggio di errore password, da mostrare con v-if -->
+            La password deve avere almeno 8 caratteri una lettera maiuscola e un
+            numero.
           </p>
         </div>
         <!-- Conferma Password -->
@@ -52,14 +58,16 @@
           >
           <div class="relative">
             <input
+              v-model="confirmPassword"
               type="password"
               id="confirm-password"
               class="w-full border rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <!-- Icona occhio opzionale anche qui -->
           </div>
-          <p class="mt-2 text-sm text-red-600">
+          <p v-if="confirmPasswordError" class="mt-2 text-sm text-red-600">
             <!-- Messaggio di errore conferma password, da mostrare con v-if -->
+            Attenzione: le password non corrispondono.
           </p>
         </div>
         <button
@@ -76,12 +84,17 @@
     </div>
   </div>
 </template>
+
 <script setup>
 const email = ref("");
 const password = ref("");
+const passwordInput = ref(null);
 const confirmPassword = ref("");
 const emailError = ref(false);
 const passwordError = ref(false);
+const confirmPasswordError = ref(false);
+const showPassword = ref(false); // For toggling password visibility
+const inputType = ref("password"); // For toggling password visibility
 
 const validateEmail = (email) => {
   return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
@@ -91,17 +104,33 @@ const validatePassword = (password) => {
   return /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/.test(password);
 };
 
+const switchInputType = () => {
+  showPassword.value = !showPassword.value;
+  inputType.value = showPassword.value ? "text" : "password";
+  nextTick(() => {
+    passwordInput.value?.focus();
+  });
+};
+
 const register = () => {
   emailError.value = !validateEmail(email.value);
   passwordError.value = !validatePassword(password.value);
+  confirmPasswordError.value = false;
 
   if (!emailError.value && !passwordError.value) {
-    // Proceed with login logic
-    console.log("Logging in with", email.value, password.value);
-    // Reset fields after login
-    email.value = "";
-    password.value = "";
-    confirmPassword.value = "";
+    // Chek if password and confirmPassword match
+    if (password.value !== confirmPassword.value) {
+      console.log(password.value, confirmPassword.value);
+      confirmPasswordError.value = true;
+    } else {
+      // Proceed with login logic
+      console.log("Logging in with", email.value, password.value);
+      // Reset fields after login
+      email.value = "";
+      password.value = "";
+      confirmPassword.value = "";
+      confirmPasswordError.value = false;
+    }
   }
 };
 </script>
