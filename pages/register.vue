@@ -17,7 +17,11 @@
             id="email"
             class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <p v-if="emailError" class="mt-2 text-sm text-red-600">
+          <p
+            v-if="emailError"
+            class="mt-2 text-sm text-red-600"
+            aria-live="polite"
+          >
             <!-- Messaggio di errore email, da mostrare con v-if -->
             Inserisci un'email valida.
           </p>
@@ -45,7 +49,11 @@
               👁️
             </button>
           </div>
-          <p v-if="passwordError" class="mt-2 text-sm text-red-600">
+          <p
+            v-if="passwordError"
+            class="mt-2 text-sm text-red-600"
+            aria-live="polite"
+          >
             <!-- Messaggio di errore password, da mostrare con v-if -->
             La password deve avere almeno 8 caratteri una lettera maiuscola e un
             numero.
@@ -74,7 +82,11 @@
               👁️
             </button>
           </div>
-          <p v-if="confirmPasswordError" class="mt-2 text-sm text-red-600">
+          <p
+            v-if="confirmPasswordError"
+            class="mt-2 text-sm text-red-600"
+            aria-live="polite"
+          >
             <!-- Messaggio di errore conferma password, da mostrare con v-if -->
             Attenzione: le password non corrispondono.
           </p>
