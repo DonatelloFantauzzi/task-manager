@@ -30,14 +30,14 @@
           <div class="relative">
             <input
               v-model="password"
-              :type="inputType"
+              :type="showPassword ? 'text' : 'password'"
               ref="passwordInput"
               id="password"
               class="w-full border rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <!-- Icona occhio da gestire con Vue -->
             <button
-              @click.prevent="switchInputType"
+              @click.prevent="switchPassword()"
               aria-label="Toggle password visibility"
               type="button"
               class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
@@ -59,11 +59,20 @@
           <div class="relative">
             <input
               v-model="confirmPassword"
-              type="password"
+              :type="confirmShowPassword ? 'text' : 'password'"
+              ref="confirmPasswordInput"
               id="confirm-password"
               class="w-full border rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <!-- Icona occhio opzionale anche qui -->
+            <button
+              @click.prevent="switchConfirmPassword()"
+              aria-label="Toggle password visibility"
+              type="button"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
+            >
+              👁️
+            </button>
           </div>
           <p v-if="confirmPasswordError" class="mt-2 text-sm text-red-600">
             <!-- Messaggio di errore conferma password, da mostrare con v-if -->
@@ -90,11 +99,12 @@ const email = ref("");
 const password = ref("");
 const passwordInput = ref(null);
 const confirmPassword = ref("");
+const confirmPasswordInput = ref(null);
 const emailError = ref(false);
 const passwordError = ref(false);
 const confirmPasswordError = ref(false);
 const showPassword = ref(false); // For toggling password visibility
-const inputType = ref("password"); // For toggling password visibility
+const confirmShowPassword = ref(false);
 
 const validateEmail = (email) => {
   return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
@@ -104,11 +114,17 @@ const validatePassword = (password) => {
   return /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/.test(password);
 };
 
-const switchInputType = () => {
+const switchPassword = () => {
   showPassword.value = !showPassword.value;
-  inputType.value = showPassword.value ? "text" : "password";
   nextTick(() => {
     passwordInput.value?.focus();
+  });
+};
+
+const switchConfirmPassword = () => {
+  confirmShowPassword.value = !confirmShowPassword.value;
+  nextTick(() => {
+    confirmPasswordInput.value?.focus();
   });
 };
 
