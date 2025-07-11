@@ -118,6 +118,7 @@ const passwordError = ref(false);
 const confirmPasswordError = ref(false);
 const showPassword = ref(false); // For toggling password visibility
 const confirmShowPassword = ref(false);
+let timeout = null;
 const { validateEmail, validatePassword } = useValidation();
 
 const switchPassword = () => {
@@ -134,6 +135,18 @@ const switchConfirmPassword = () => {
   });
 };
 
+watch([password, confirmPassword], ([newPasswordValue, newConfirmValue]) => {
+  if (timeout) clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    if (newConfirmValue.length > 0) {
+      confirmPasswordError.value = newPasswordValue !== newConfirmValue;
+      console.log("Confirm password checked");
+    } else {
+      confirmPasswordError.value = false;
+    }
+  }, 500);
+});
+
 const register = () => {
   emailError.value = !validateEmail(email.value);
   passwordError.value = !validatePassword(password.value);
@@ -141,18 +154,15 @@ const register = () => {
 
   if (!emailError.value && !passwordError.value) {
     // Chek if password and confirmPassword match
-    if (password.value !== confirmPassword.value) {
-      console.log(password.value, confirmPassword.value);
-      confirmPasswordError.value = true;
-    } else {
-      // Proceed with login logic
-      console.log("Logging in with", email.value, password.value);
-      // Reset fields after login
-      email.value = "";
-      password.value = "";
-      confirmPassword.value = "";
-      confirmPasswordError.value = false;
-    }
+    // Proceed with login logic
+    console.log("Logging in with", email.value, password.value);
+    // Reset fields after login
+    email.value = "";
+    password.value = "";
+    confirmPassword.value = "";
+    confirmPasswordError.value = false;
+    emailError.value = false;
+    passwordError.value = false;
   }
 };
 </script>
