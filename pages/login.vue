@@ -54,7 +54,9 @@
 
       <p class="mt-6 text-center text-sm text-gray-600">
         Non hai un account?
-        <a href="/register" class="text-blue-600 hover:underline">Registrati</a>
+        <NuxtLink to="/register" class="text-blue-600 hover:underline"
+          >Registrati</NuxtLink
+        >
       </p>
     </div>
   </div>

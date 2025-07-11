@@ -5,6 +5,46 @@
       <p class="text-gray-500 mb-6 text-center">
         Entra nel tuo nuovo task manager!
       </p>
+
+      <!-- Notifica di successo dopo la registrazione -->
+      <div
+        v-if="showConfirmationNotice"
+        class="w-full bg-green-50 border border-green-200 rounded-xl p-4 mt-6 flex items-center space-x-3 shadow-sm"
+      >
+        <svg
+          class="w-6 h-6 text-green-600 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9 12l2 2 4-4M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10z"
+          />
+        </svg>
+        <div>
+          <p class="font-semibold text-green-700">Registrazione completata!</p>
+          <p class="text-green-600 text-sm mt-1">
+            Ti abbiamo inviato una mail di conferma a
+            <span class="font-mono">{{ email }}</span
+            >.<br />
+            Per completare la registrazione, clicca il link che trovi nella
+            mail.<br />
+            <span class="italic text-xs"
+              >Controlla anche la cartella spam se non la vedi subito.</span
+            >
+          </p>
+        </div>
+        <NuxtLink
+          to="/login"
+          class="inline-block px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition ml-2"
+        >
+          Vai al login
+        </NuxtLink>
+      </div>
+
       <form @submit.prevent="register" class="space-y-4">
         <!-- Email -->
         <div>
@@ -13,6 +53,7 @@
           >
           <input
             v-model="email"
+            :disabled="showConfirmationNotice"
             type="email"
             id="email"
             class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -35,6 +76,7 @@
             <input
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
+              :disabled="showConfirmationNotice"
               ref="passwordInput"
               id="password"
               class="w-full border rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -68,6 +110,7 @@
             <input
               v-model="confirmPassword"
               :type="confirmShowPassword ? 'text' : 'password'"
+              :disabled="showConfirmationNotice"
               ref="confirmPasswordInput"
               id="confirm-password"
               class="w-full border rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -92,15 +135,19 @@
           </p>
         </div>
         <button
+          :disabled="isSubmitting"
           type="submit"
           class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
         >
-          Registrati
+          <span v-if="isSubmitting">Registrazione in corso...</span>
+          <span v-else>Registrati</span>
         </button>
       </form>
       <p class="mt-6 text-center text-sm text-gray-600">
         Hai già un account?
-        <a href="/login" class="text-blue-600 hover:underline">Accedi</a>
+        <NuxtLink to="/login" class="text-blue-600 hover:underline"
+          >Accedi</NuxtLink
+        >
       </p>
     </div>
   </div>
@@ -118,9 +165,13 @@ const passwordError = ref(false);
 const confirmPasswordError = ref(false);
 const showPassword = ref(false); // For toggling password visibility
 const confirmShowPassword = ref(false);
-let timeout = null;
+const isSubmitting = ref(false);
+const backendError = ref("");
+const showConfirmationNotice = ref(false);
+const { $supabase } = useNuxtApp();
 const { validateEmail, validatePassword } = useValidation();
 
+let timeout = null;
 const switchPassword = () => {
   showPassword.value = !showPassword.value;
   nextTick(() => {
@@ -147,16 +198,30 @@ watch([password, confirmPassword], ([newPasswordValue, newConfirmValue]) => {
   }, 500);
 });
 
-const register = () => {
+const register = async () => {
   emailError.value = !validateEmail(email.value);
   passwordError.value = !validatePassword(password.value);
   confirmPasswordError.value = false;
 
   if (!emailError.value && !passwordError.value) {
-    // Chek if password and confirmPassword match
-    // Proceed with login logic
+    isSubmitting.value = true;
+    backendError.value = "";
+
+    const { data, error } = await $supabase.auth.signUp({
+      email: email.value,
+      password: password.value,
+    });
+
+    if (error) {
+      backendError.value = error.message; // Mostra l’errore ricevuto da Supabase
+    } else {
+      showConfirmationNotice.value = true;
+      // navigateTo("/login");
+    }
+
+    isSubmitting.value = false;
+
     console.log("Logging in with", email.value, password.value);
-    // Reset fields after login
     email.value = "";
     password.value = "";
     confirmPassword.value = "";
