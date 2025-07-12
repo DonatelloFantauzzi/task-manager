@@ -4,6 +4,14 @@
       <h1 class="text-2xl font-bold mb-2 text-center">Accedi al tuo account</h1>
       <p class="text-gray-500 mb-6 text-center">Gestisci i tuoi task ovunque</p>
 
+      <p
+        v-if="backendError"
+        class="mt-2 text-red-600 text-center"
+        aria-live="polite"
+      >
+        {{ backendError }}
+      </p>
+
       <form @submit.prevent="login" class="space-y-4">
         <div>
           <label class="block text-sm font-medium mb-1" for="email"
@@ -46,9 +54,11 @@
 
         <button
           type="submit"
+          :disabled="isSubmitting"
           class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
         >
-          Accedi
+          <span v-if="isSubmitting">Accesso in corso...</span>
+          <span v-else>Accedi</span>
         </button>
       </form>
 
@@ -67,11 +77,32 @@ const email = ref("");
 const emailError = ref(false);
 const password = ref("");
 const passwordError = ref(false);
+const backendError = ref("");
+const isSubmitting = ref(false);
+const { $supabase } = useNuxtApp();
 const { validateEmail, validatePassword } = useValidation();
 
-const login = () => {
+const login = async () => {
   emailError.value = !validateEmail(email.value);
   passwordError.value = !validatePassword(password.value);
+
+  if (emailError.value || passwordError.value) {
+    return;
+  }
+
+  isSubmitting.value = true;
+  const { data, error } = await $supabase.auth.signInWithPassword({
+    email: email.value,
+    password: password.value,
+  });
+
+  if (error) {
+    backendError.value = error.message;
+  } else {
+    console.log("Sessione attuale:", data);
+    navigateTo("/dashboard");
+  }
+
   if (!emailError.value && !passwordError.value) {
     // Proceed with login logic
     console.log("Logging in with", email.value, password.value);
@@ -79,5 +110,7 @@ const login = () => {
     email.value = "";
     password.value = "";
   }
+
+  isSubmitting.value = false;
 };
 </script>

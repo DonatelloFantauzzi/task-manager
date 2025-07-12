@@ -56,7 +56,12 @@
             :disabled="showConfirmationNotice"
             type="email"
             id="email"
-            class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            :class="[
+              'w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500',
+              showConfirmationNotice
+                ? 'opacity-50 cursor-not-allowed bg-gray-200'
+                : '',
+            ]"
           />
           <p
             v-if="emailError"
@@ -79,7 +84,12 @@
               :disabled="showConfirmationNotice"
               ref="passwordInput"
               id="password"
-              class="w-full border rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              :class="[
+                'w-full border rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500',
+                showConfirmationNotice
+                  ? 'opacity-50 cursor-not-allowed bg-gray-200'
+                  : '',
+              ]"
             />
             <!-- Icona occhio da gestire con Vue -->
             <button
@@ -113,7 +123,12 @@
               :disabled="showConfirmationNotice"
               ref="confirmPasswordInput"
               id="confirm-password"
-              class="w-full border rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              :class="[
+                'w-full border rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500',
+                showConfirmationNotice
+                  ? 'opacity-50 cursor-not-allowed bg-gray-200'
+                  : '',
+              ]"
             />
             <!-- Icona occhio opzionale anche qui -->
             <button
@@ -135,7 +150,7 @@
           </p>
         </div>
         <button
-          :disabled="isSubmitting"
+          :disabled="isSubmitting || showConfirmationNotice"
           type="submit"
           class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
         >
