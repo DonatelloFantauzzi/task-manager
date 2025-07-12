@@ -1,3 +1,4 @@
+// Abbiamo aggiunto .client per indicare che questo file va caricato solo nel client altrimenti non funziona
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = "https://iremkhiakjayjvgssrcy.supabase.co"; // ← la tua url
