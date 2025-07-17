@@ -11,8 +11,9 @@
 
     <!-- Right: User + logout -->
     <div class="flex items-center gap-4">
-      <span class="text-base font-medium text-gray-600">Ciao, NomeUtente</span>
+      <span class="text-base font-medium text-gray-600">Ciao</span>
       <button
+        @click="logout"
         class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition"
       >
         Logout
@@ -20,3 +21,11 @@
     </div>
   </nav>
 </template>
+<script setup>
+const { $supabase } = useNuxtApp();
+
+const logout = async () => {
+  await $supabase.auth.signOut();
+  navigateTo("/login");
+};
+</script>
