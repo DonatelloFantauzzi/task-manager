@@ -169,6 +169,9 @@
 </template>
 
 <script setup>
+definePageMeta({
+  middleware: "guest",
+});
 import { useValidation } from "@/composables/useValidation";
 const email = ref("");
 const password = ref("");
