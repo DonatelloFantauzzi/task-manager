@@ -60,14 +60,6 @@
           <span v-if="isSubmitting">Accesso in corso...</span>
           <span v-else>Accedi</span>
         </button>
-        <button
-          type="button"
-          class="w-full flex items-center justify-center border border-gray-300 bg-white rounded-lg py-2 hover:bg-gray-50 cursor-pointer"
-          @click="loginWithGoogle"
-        >
-          <!-- <img src="/google.svg" class="w-5 h-5 mr-2" /> -->
-          Entra con Google
-        </button>
       </form>
 
       <p class="mt-6 text-center text-sm text-gray-600">
@@ -92,17 +84,6 @@ const backendError = ref("");
 const isSubmitting = ref(false);
 const { $supabase } = useNuxtApp();
 const { validateEmail, validatePassword } = useValidation();
-
-const loginWithGoogle = async () => {
-  console.log("Logging in with Google");
-  const { error } = await $supabase.auth.signInWithOAuth({
-    provider: "google",
-  });
-
-  if (error) {
-    backendError.value = error.message;
-  }
-};
 
 const login = async () => {
   emailError.value = !validateEmail(email.value);
