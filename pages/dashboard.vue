@@ -82,6 +82,7 @@
 <script setup>
 definePageMeta({
   middleware: "auth",
+  layout: "dashboard",
 });
 
 const tasks = ref([]);
